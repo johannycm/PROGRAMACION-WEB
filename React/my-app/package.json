@@ -11,6 +11,7 @@
     "tailwind": "npx tailwindcss -i ./src/resources/css/tailwind.css -o ./src/resources/css/output.css --watch"
   },
   "dependencies": {
+    "framer-motion": "^12.0.9",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
