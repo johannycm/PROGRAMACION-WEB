@@ -16,7 +16,8 @@ class InventorySystem:
         self.users = self.load_csv(USERS_FILE)
         print(f"Productos cargados: {self.products}")  
         print(f"Usuarios cargados: {self.users}")  
-
+    
+    # Cargar datos de archivo CSV
     def load_csv(self, filename):
         if not os.path.exists(filename):
             print(f"Archivo {filename} no existe. Creando un nuevo archivo.")  
@@ -28,7 +29,8 @@ class InventorySystem:
         except csv.Error as e:
             print(f"Error al leer el archivo CSV {filename}: {e}")
             return []
-
+   
+    # Guardar datos en archivo CSV
     def save_csv(self, filename, data, fieldnames):
         try:
             with open(filename, "w", newline="", encoding="utf-8") as file:
@@ -38,7 +40,7 @@ class InventorySystem:
             print(f"Datos guardados en {filename}: {data}")  
         except Exception as e:
             print(f"Error al guardar en el archivo CSV {filename}: {e}")
-
+    # Enviar correo electrónico
     def send_email(self, to_email, name):
         from_email = "johanny.colman@gmail.com"  
         password = "bqww ctuf mfer vtux"
@@ -64,7 +66,8 @@ class InventorySystem:
             print("Error: Autenticación fallida. Verifica tu email y contraseña.")
         except Exception as e:
             print(f"Error al enviar correo electrónico: {e}")
-
+    
+    # Enviar mensaje de WhatsApp
     def send_whatsapp(self, phone, name):
         message = f"¡Hola {name}! 🎉 Gracias por registrarte en nuestra tienda. Estamos muy felices de tenerte con nosotros."
         try:
@@ -78,7 +81,8 @@ class InventorySystem:
         print(f"Producto agregado: {product}") 
         self.save_csv(PRODUCTS_FILE, self.products, product.keys())
         return f"✅ Producto '{name}' agregado exitosamente."
-
+    
+    # Agregar usuario   
     def add_user(self, name, email, phone, address):
         if not self.is_valid_email(email):
             return f"⚠️ Email '{email}' no es válido."
@@ -93,7 +97,8 @@ class InventorySystem:
         self.send_whatsapp(phone, name)
         
         return f"✅ Usuario '{name}' agregado exitosamente y se ha enviado un correo y WhatsApp."
-
+    
+    #Eliminar usuario
     def delete_user(self, email):
         before_count = len(self.users)
         self.users = [u for u in self.users if u["Email"] != email]
@@ -106,7 +111,8 @@ class InventorySystem:
         else:
             open(USERS_FILE, "w").close()
         return f"🗑️ Usuario con email '{email}' eliminado exitosamente."
-
+    
+    #Eliminar producto
     def delete_product(self, name):
         before_count = len(self.products)
         self.products = [p for p in self.products if p["Nombre"] != name]
@@ -119,7 +125,8 @@ class InventorySystem:
         else:
             open(PRODUCTS_FILE, "w").close()
         return f"🗑️ Producto con nombre '{name}' eliminado exitosamente."
-
+    
+    # Lista productos y usuarios
     def list_items(self, items, item_type, page=1, per_page=12):
         if not items:
             print(f"⚠️ No hay {item_type} registrados.")
@@ -141,6 +148,7 @@ class InventorySystem:
     def is_valid_phone(self, phone):
         return re.match(r"^\+\d{9,15}$", phone) is not None
 
+# Menu de inventario
 def menu():
     system = InventorySystem()
 
