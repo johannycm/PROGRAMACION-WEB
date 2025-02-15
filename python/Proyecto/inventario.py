@@ -1,3 +1,4 @@
+import re
 import csv
 import os
 import smtplib
@@ -17,7 +18,6 @@ class InventorySystem:
         print(f"Usuarios cargados: {self.users}")  
 
     def load_csv(self, filename):
-        #Carga datos desde el CSV
         if not os.path.exists(filename):
             print(f"Archivo {filename} no existe. Creando un nuevo archivo.")  
             return []
@@ -30,7 +30,6 @@ class InventorySystem:
             return []
 
     def save_csv(self, filename, data, fieldnames):
-        # Guarda los datos en un archivo CSV
         try:
             with open(filename, "w", newline="", encoding="utf-8") as file:
                 writer = csv.DictWriter(file, fieldnames=fieldnames)
@@ -41,7 +40,6 @@ class InventorySystem:
             print(f"Error al guardar en el archivo CSV {filename}: {e}")
 
     def send_email(self, to_email, name):
-        #Envía un correo electrónico usuario registrado
         from_email = "johanny.colman@gmail.com"  
         password = "bqww ctuf mfer vtux"
 
@@ -49,7 +47,6 @@ class InventorySystem:
         body = f"Hola {name},\n\n¡Gracias por registrarte en nuestra tienda! Estamos felices de tenerte con nosotros.\n\nSaludos,\nEl equipo de la tienda."
 
         try:
-            # servidor SMTP
             server = smtplib.SMTP("smtp.gmail.com", 587)
             server.starttls()
             server.login(from_email, password)
@@ -69,7 +66,6 @@ class InventorySystem:
             print(f"Error al enviar correo electrónico: {e}")
 
     def send_whatsapp(self, phone, name):
-        #Envía un mensaje de WhatsApp usuario registrado
         message = f"¡Hola {name}! 🎉 Gracias por registrarte en nuestra tienda. Estamos muy felices de tenerte con nosotros."
         try:
             kit.sendwhatmsg_instantly(f"+{phone}", message, wait_time=10, tab_close=True)
@@ -77,29 +73,28 @@ class InventorySystem:
             print(f"Error al enviar mensaje de WhatsApp: {e}")
 
     def add_product(self, name, price, quantity, category):
-        #Agregr producto
         product = {"Nombre": name, "Precio": price, "Cantidad": quantity, "Categoría": category, "Fecha": datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
         self.products.append(product)
-        print(f"Producto agregado: {product}")  # Debugging
+        print(f"Producto agregado: {product}") 
         self.save_csv(PRODUCTS_FILE, self.products, product.keys())
         return f"✅ Producto '{name}' agregado exitosamente."
 
     def add_user(self, name, email, phone, address):
-        #Agregar usuario
+        if not self.is_valid_email(email):
+            return f"⚠️ Email '{email}' no es válido."
+        if not self.is_valid_phone(phone):
+            return f"⚠️ Teléfono '{phone}' no es válido."
+
         user = {"Nombre": name, "Email": email, "Teléfono": phone, "Dirección": address}
         self.users.append(user)
         self.save_csv(USERS_FILE, self.users, user.keys())
 
-        # Enviar correo 
         self.send_email(email, name)
-        
-        # Enviar WhatsApp
         self.send_whatsapp(phone, name)
         
         return f"✅ Usuario '{name}' agregado exitosamente y se ha enviado un correo y WhatsApp."
 
     def delete_user(self, email):
-        #Elimina un usuario actualiza el CSV
         before_count = len(self.users)
         self.users = [u for u in self.users if u["Email"] != email]
         after_count = len(self.users)
@@ -109,10 +104,22 @@ class InventorySystem:
         if len(self.users) > 0:
             self.save_csv(USERS_FILE, self.users, self.users[0].keys())
         else:
-            open(USERS_FILE, "w").close() 
-         return f"🗑️ Usuario con email '{email}' eliminado exitosamente."
+            open(USERS_FILE, "w").close()
+        return f"🗑️ Usuario con email '{email}' eliminado exitosamente."
 
-         # Muestra elementos
+    def delete_product(self, name):
+        before_count = len(self.products)
+        self.products = [p for p in self.products if p["Nombre"] != name]
+        after_count = len(self.products)
+
+        if before_count == after_count:
+            return f"⚠️ Producto con nombre '{name}' no encontrado."
+        if len(self.products) > 0:
+            self.save_csv(PRODUCTS_FILE, self.products, self.products[0].keys())
+        else:
+            open(PRODUCTS_FILE, "w").close()
+        return f"🗑️ Producto con nombre '{name}' eliminado exitosamente."
+
     def list_items(self, items, item_type, page=1, per_page=12):
         if not items:
             print(f"⚠️ No hay {item_type} registrados.")
@@ -128,7 +135,11 @@ class InventorySystem:
             print(f"{i}. {item}")
         return paginated_items
 
-    # Sistema De inventario
+    def is_valid_email(self, email):
+        return re.match(r"[^@]+@[^@]+\.[^@]+", email) is not None
+
+    def is_valid_phone(self, phone):
+        return re.match(r"^\+\d{9,15}$", phone) is not None
 
 def menu():
     system = InventorySystem()

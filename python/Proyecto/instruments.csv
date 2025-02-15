@@ -1,5 +1,4 @@
 Nombre,Precio,Cantidad,Categoría,Fecha
-guitarra,400,1,acustico,2025-02-14 22:03:27
 bateria,500,1,acustico,2025-02-14 22:03:49
 Piano,400,1,electrico,2025-02-14 22:05:38
 flauta,20,1,viento,2025-02-14 22:28:15
@@ -16,3 +15,5 @@ Multiefectos,5000,5,Electrico,2025-02-14 23:09:42
 Charrasca,50,2,Acustico,2025-02-14 23:10:04
 Organo,25555,5,Electrico,2025-02-14 23:10:28
 Tambor,540,5,Acustico,2025-02-14 23:11:00
+Bombo,20,1,Acustico,2025-02-14 23:41:52
+Guitarra doce cuerdas,500000,2,acustico,2025-02-14 23:48:32
